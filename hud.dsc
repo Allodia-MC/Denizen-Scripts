@@ -11,15 +11,21 @@ hud_toggle:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
         - stop
     # could this next portion be better done with a choose/case layout?
-    - if <context.args.get[1].contains_text[enable]>:
+    - if <context.args.get[1].contains_text[enable]> && !<player.flag[hud_enabled]>:
         - flag player hud_enabled:true
         - inject hud_enable
         - narrate "<green>Successfully enabled HUD."
         - stop
-    - if <context.args.get[1].contains_text[disable]>:
+    - if <context.args.get[1].contains_text[enable]> && <player.flag[hud_enabled]>:
+        - narrate "<red>Your HUD is already enabled."
+        - stop
+    - if <context.args.get[1].contains_text[disable]> && <player.flag[hud_enabled]>:
         - flag player hud_enabled:false
         - inject hud_disable
         - narrate "<red>Successfully disabled HUD."
+        - stop
+    - if <context.args.get[1].contains_text[disable]> && !<player.flag[hud_enabled]>:
+        - narrate "<red>Your HUD is already disabled."
         - stop
     - else:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
@@ -27,7 +33,7 @@ hud_toggle:
 hud_enable:
     type: task
     script:
-    - bossbar create hud players:<player> "title:<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><player.location.z.round_to[0]>" progress:0.0 style:SEGMENTED_20
+    - bossbar create hud players:<player> "title:<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><player.location.z.round_to[0]>" style:SOLID color:YELLOW progress:0.0
 
 hud_disable:
     type: task
