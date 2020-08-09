@@ -12,10 +12,10 @@ hud_toggle:
         - stop
     # could this next portion be better done with a choose/case layout?
     - if <context.args.get[1].contains_text[enable]>:
-        - flag player hud:enabled
+        - flag player hud_enabled:true
         - inject hud_enable
     - if <context.args.get[1].contains_text[disable]>:
-        - flag player hud:disabled
+        - flag player hud_enabled:false
         - inject hud_disable
     - else:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
@@ -25,7 +25,7 @@ hud_updater:
     debug: true
     events:
         on tick every:10:
-        - if <player.flag[hud]> == enabled:
+        - if <player.flag[hud_enabled]>:
             - actionbar ""
         - else:
             - stop
