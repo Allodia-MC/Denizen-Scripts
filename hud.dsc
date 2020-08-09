@@ -12,14 +12,26 @@ hud_toggle:
         - stop
     # could this next portion be better done with a choose/case layout?
     - if <context.args.get[1].contains_text[enable]>:
+        - flag player hud:enabled
         - inject hud_enable
     - if <context.args.get[1].contains_text[disable]>:
+        - flag player hud:disabled
         - inject hud_disable
     - else:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
 
+hud_updater:
+    type: world
+    debug: true
+    events:
+        on tick every:10:
+        - if <player.flag[hud]> == enabled:
+            - actionbar ""
+        - else:
+            - stop
+
 hud_enable:
     type: task
     script:
-    - bossbar create compass players:<player> title:<player.location.direction>
+    - actionbar  players:<player> title:<player.location.direction>
 
