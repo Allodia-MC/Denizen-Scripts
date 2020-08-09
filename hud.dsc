@@ -20,18 +20,34 @@ hud_toggle:
     - else:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
 
+hud_enable:
+    type: task
+    script:
+    - bossbar create hud players:<player> title:"<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.char_at[1].to_uppercase> <&7><player.location.z.round_to[0]>"
+
+hud_disable:
+    type: task
+    script:
+    - bossbar remove hud
+
 hud_updater:
     type: world
     debug: true
     events:
         on tick every:10:
         - if <player.flag[hud_enabled]>:
-            - actionbar ""
+            - bossbar update hud players:<player> title:"<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.char_at[1].to_uppercase> <&7><player.location.z.round_to[0]>"
         - else:
             - stop
 
-hud_enable:
-    type: task
-    script:
-    - actionbar  players:<player> title:<player.location.direction>
+hud_on_first_join:
+    type: world
+    debug: true
+    events:
+        on player joins:
+        - if !<player.has_flag[hud_enabled]>:
+            - inject hud_enable
+            - flag player hud_enabled:true
+        - else:
+            - stop
 
