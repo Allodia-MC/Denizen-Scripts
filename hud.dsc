@@ -14,16 +14,20 @@ hud_toggle:
     - if <context.args.get[1].contains_text[enable]>:
         - flag player hud_enabled:true
         - inject hud_enable
+        - narrate "<green>Successfully enabled HUD."
+        - stop
     - if <context.args.get[1].contains_text[disable]>:
         - flag player hud_enabled:false
         - inject hud_disable
+        - narrate "<red>Successfully disabled HUD."
+        - stop
     - else:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
 
 hud_enable:
     type: task
     script:
-    - bossbar create hud players:<player> title:"<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.char_at[1].to_uppercase> <&7><player.location.z.round_to[0]>"
+    - bossbar create hud players:<player> "title:<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><player.location.z.round_to[0]>" progress:0.0 style:SEGMENTED_20
 
 hud_disable:
     type: task
@@ -32,15 +36,17 @@ hud_disable:
 
 hud_updater:
     type: world
-    debug: true
+    debug: false
     events:
-        on tick every:10:
-        - if <player.flag[hud_enabled]>:
-            - bossbar update hud players:<player> title:"<&7><player.location.x.round_to[0]> <&f><&l><player.location.direction.char_at[1].to_uppercase> <&7><player.location.z.round_to[0]>"
-        - else:
-            - stop
+        on tick every:30:
+        - foreach <server.online_players> as:player:
+            - if <[player].flag[hud_enabled]>:
+                - bossbar update hud players:<[player]> "title:<&7><[player].location.x.round_to[0]> <&f><&l><[player].location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><[player].location.z.round_to[0]>"
+            - else:
+                - stop
 
-hud_on_first_join:
+# hud_join_listener listens for new players and then enables the hud + flags them, or just enables the hud for flagged players on login
+hud_join_listener:
     type: world
     debug: true
     events:
@@ -48,6 +54,9 @@ hud_on_first_join:
         - if !<player.has_flag[hud_enabled]>:
             - inject hud_enable
             - flag player hud_enabled:true
+        - if <player.flag[hud_enabled]>:
+            - inject hud_enable
         - else:
             - stop
+
 
