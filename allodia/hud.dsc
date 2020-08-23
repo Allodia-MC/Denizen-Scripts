@@ -1,3 +1,7 @@
+# TO-DO:
+#
+# implement current region name in the HUD, check <player.location.note_name>
+
 hud_toggle:
     type: command
     name: hud
