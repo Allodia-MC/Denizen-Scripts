@@ -7,11 +7,11 @@ hud_toggle:
     name: hud
     description: Toggle display of the HUD.
     usage: /hud <&lt>enable/disable<&gt>
-    permission: allodia.perm.hud
+    permission: allodia.command.hud
     tab completions:
         1: enable|disable
     script:
-    - if <context.args.is_empty>:
+    - if <context.args.is_empty> || <context.args.size> > 1:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
         - stop
     # could this next portion be better done with a choose/case layout?
