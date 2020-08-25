@@ -35,22 +35,3 @@ IronHologramCommand:
     permission: allodia.admin.ironhologram
     script:
     - run IronHologram
-
-
-HologramMaker:
-    type: command
-    name: hologrammaker
-    usage: /hologrammaker [text to be displayed]
-    aliases:
-    - hmaker
-    - hologram
-    - holomaker
-    - holo
-    description: Will make holograms
-    permission: allodia.admin.hologram
-    script:
-        - define message <context.raw_args.parse_color>
-        - spawn armor_stand <player.location> save:stand visible:false custom_name:<[message]> custom_name_visible:true
-        - adjust <entry[stand].spawned_entity> visible:false
-        - adjust <entry[stand].spawned_entity> custom_name:<[message]>
-        - adjust <entry[stand].spawned_entity> custom_name_visible:true
