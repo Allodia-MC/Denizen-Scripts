@@ -16,7 +16,7 @@ hud_toggle:
         - stop
     # could this next portion be better done with a choose/case layout?
     - if <context.args.get[1].contains_text[enable]> && !<player.flag[hud_enabled]>:
-        - flag player hud_enabled:true
+        - flag player hud_enabled
         - inject hud_enable
         - narrate "<green>Successfully enabled HUD."
         - stop
@@ -24,7 +24,7 @@ hud_toggle:
         - narrate "<red>Your HUD is already enabled."
         - stop
     - if <context.args.get[1].contains_text[disable]> && <player.flag[hud_enabled]>:
-        - flag player hud_enabled:false
+        - flag player hud_enabled:!
         - inject hud_disable
         - narrate "<red>Successfully disabled HUD."
         - stop
@@ -49,11 +49,8 @@ hud_updater:
     debug: false
     events:
         on tick every:30:
-        - foreach <server.online_players> as:player:
-            - if <[player].flag[hud_enabled]>:
-                - bossbar update hud players:<[player]> "title:<&7><[player].location.x.round_to[0]> <&f><&l><[player].location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><[player].location.z.round_to[0]>"
-            - else:
-                - stop
+        - foreach <server.online_players_flagged[hud_enabled]> as:player:
+            - bossbar update hud players:<[player]> "title:<&7><[player].location.x.round_to[0]> <&f><&l><[player].location.direction.replace_text[north].with[N].replace_text[south].with[S].replace_text[east].with[E].replace_text[west].with[W].replace_text[northwest].with[NW].replace_text[northeast].with[NE].replace_text[southwest].with[SW].replace_text[southeast].with[SE]> <&7><[player].location.z.round_to[0]>"
 
 # hud_join_listener listens for new players and then enables the hud + flags them, or just enables the hud for flagged players on login
 hud_join_listener:
@@ -61,12 +58,10 @@ hud_join_listener:
     debug: true
     events:
         on player joins:
-        - if !<player.has_flag[hud_enabled]>:
+        - if !<player.has_flag[user]>:
             - inject hud_enable
             - flag player hud_enabled:true
         - if <player.flag[hud_enabled]>:
             - inject hud_enable
-        - else:
-            - stop
 
 
