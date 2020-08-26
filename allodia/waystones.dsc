@@ -3,6 +3,8 @@
 # Improve waystone_teleport particle effects + sounds
 # General cleanup
 # Take teleportation rune / implement rune uses/durability via NBT
+# Stop "Come back with teleportation rune" message for players who just teleported to a waystone
+# Double right click to confirm tp?
 
 teleportation_rune_test1:
     type: item
@@ -52,19 +54,19 @@ waystone_listener:
                 - playeffect effect:ENCHANTMENT_TABLE at:<context.area.blocks[lodestone].first.center> quantity:10 data:0.8 offset:0,2,0
                 - wait 2t
         on player exits waystone_*:
-        - if <player.item_in_hand.has_nbt[destination]>:
+        - if <context.cause> == TELEPORT:
+            - stop
+        - if <player.item_in_hand.has_nbt[destination]> || <player.has_flag[justteleported]>:
             - flag player inwaystone:!
+            - flag player justteleported:!
             - playsound <player.location> sound:BLOCK_BEACON_DEACTIVATE volume:10 pitch:0.5
         - else:
             - playsound <player.location> sound:ENTITY_VILLAGER_AMBIENT volume:10 pitch:1
             - narrate "<&color[#A181B4]><italic>Maybe I should come back with a teleportation rune.." targets:<player>
         after player scrolls their hotbar in:waystone_* item:teleportation_rune_*:
-        - flag player inwaystone:true
-        - playsound <player.location> sound:BLOCK_BEACON_ACTIVATE volume:10 pitch:0.5
-        - while <player.item_in_hand.has_nbt[destination]> && <player.has_flag[inwaystone]>:
-            - playeffect effect:ENCHANTMENT_TABLE at:<player.location.find.blocks[lodestone].within[5].first.center> quantity:10 data:0.8 offset:0,2,0
-            - wait 2t
+        - event "player enters waystone_*"
         on player right clicks lodestone in:waystone_* with:teleportation_rune_*:
+        - take iteminhand
         - inject waystone_teleport
 
 waystone_teleport:
@@ -75,4 +77,8 @@ waystone_teleport:
         - narrate "<red>You are already here!"
         - stop
     - else:
+        - effectlib type:atom duration:3s location:<context.location>
+        - wait 3s
+        - flag player justteleported
+        - playsound <player.location> sound:ENTITY_ENDERMAN_TELEPORT volume:10 pitch:0.5
         - teleport <player> <cuboid[<[destination]>].spawnable_blocks.random>
