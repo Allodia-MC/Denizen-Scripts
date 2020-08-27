@@ -1,3 +1,11 @@
+## MINING RESOURCES
+
+# Iron Holograms
+IronItem:
+    type: entity
+    entity_type: DROPPED_ITEM
+    gravity: false
+    item: IRON_INGOT
 IronLine1:
     type: entity
     entity_type: ARMOR_STAND
@@ -23,6 +31,7 @@ IronLine3:
 IronHologram:
     type: task
     script:
+    - spawn IronItem <player.location.above[1.1]>
     - spawn IronLine1 <player.location.above[0.8]>
     - spawn IronLine2 <player.location.above[0.5]>
     - spawn IronLine3 <player.location.above[0.2]>
