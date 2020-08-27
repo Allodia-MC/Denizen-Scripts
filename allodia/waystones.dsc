@@ -2,6 +2,7 @@
 #
 # Implement rune uses/durability via NBT
 # Cleanup Titles for Confirmation Click, format destination elementtag
+# Implement stellium cost
 
 teleportation_rune_test1:
     type: item
