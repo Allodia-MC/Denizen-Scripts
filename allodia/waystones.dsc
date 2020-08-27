@@ -1,6 +1,5 @@
 # TO-DO:
 #
-# Improve waystone_teleport particle effects + sounds
 # Implement rune uses/durability via NBT
 # Cleanup Titles for Confirmation Click, format destination elementtag
 
@@ -70,10 +69,11 @@ waystone_listener:
         - if <player.item_in_hand.has_nbt[destination]>:
             - playsound <player.location> sound:BLOCK_BEACON_DEACTIVATE volume:10 pitch:0.5
         after player scrolls their hotbar in:waystone_* item:teleportation_rune_*:
+        - flag player inwaystone:!
         - flag player activewaystone
         - playsound <player.location> sound:BLOCK_BEACON_ACTIVATE volume:10 pitch:0.5
         - while <player.has_flag[activewaystone]> && <player.item_in_hand.has_nbt[destination]>:
-            - playeffect effect:ENCHANTMENT_TABLE at:<player.location.find.blocks[lodestone].within[5].first.center> quantity:10 data:0.8 offset:0,2,0
+            - playeffect effect:ENCHANTMENT_TABLE at:<player.location.find.blocks[lodestone].within[7].first.center> quantity:10 data:0.8 offset:0,2,0
             - wait 2t
         on player right clicks lodestone in:waystone_* with:teleportation_rune_* flagged:activewaystone:
         - define destination <context.item.nbt[destination]>
@@ -81,11 +81,12 @@ waystone_listener:
             - narrate "<red>You are already here!"
             - stop
         - else:
-            - flag player confirmation duration:5s
             - title "title:<green>[ Destination ]" "subtitle:<dark_purple><context.item.nbt[destination]>" fade_in:0.25s stay:1s fade_out:0.25s
-            - wait 1s
-            - title "title:<green>Right click to confirm."
+            - wait 1.5s
+            - flag player confirmation duration:5s
+            - title "title:<green>Right click to confirm..." "subtitle:To: <dark_purple><context.item.nbt[destination]>" fade_in:0.25s stay:4.5s fade_out:0.25s
         on player right clicks lodestone in:waystone_* with:teleportation_rune_* flagged:confirmation:
+        - title "title:" "subtitle:"
         - define destination <context.item.nbt[destination]>
         - flag player activewaystone:!
         - take iteminhand
@@ -95,8 +96,10 @@ waystone_listener:
 waystone_teleport:
     type: task
     script:
-    - effectlib type:atom duration:3s location:<context.location>
+    - wait 1s
+    - mythicskill waystone_effect <context.location.find.blocks[lodestone].within[7].first.center>
+    - playsound <player.location> sound:BLOCK_RESPAWN_ANCHOR_SET_SPAWN volume:10 pitch:0.7
     - wait 3s
     - flag player justteleported
-    - playsound <player.location> sound:ENTITY_ENDERMAN_TELEPORT volume:10 pitch:0.5
+    - playsound <player.location> sound:ENTITY_ILLUSIONER_MIRROR_MOVE volume:10 pitch:0.7
     - teleport <player> <cuboid[<[destination]>].spawnable_blocks.random>
