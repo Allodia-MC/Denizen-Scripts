@@ -2,7 +2,7 @@
 #
 # Improve waystone_teleport particle effects + sounds
 # Implement rune uses/durability via NBT
-# Cleanup Titles for Confirmation Click
+# Cleanup Titles for Confirmation Click, format destination elementtag
 
 teleportation_rune_test1:
     type: item
