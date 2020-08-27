@@ -1,10 +1,8 @@
 # TO-DO:
 #
 # Improve waystone_teleport particle effects + sounds
-# General cleanup
-# Take teleportation rune / implement rune uses/durability via NBT
-# Stop "Come back with teleportation rune" message for players who just teleported to a waystone
-# Double right click to confirm tp?
+# Implement rune uses/durability via NBT
+# Cleanup Titles for Confirmation Click
 
 teleportation_rune_test1:
     type: item
@@ -47,38 +45,58 @@ waystone_listener:
     type: world
     events:
         after player enters waystone_*:
-        - if <player.item_in_hand.has_nbt[destination]>:
-            - flag player inwaystone:true
-            - playsound <player.location> sound:BLOCK_BEACON_ACTIVATE volume:10 pitch:0.5
-            - while <player.location.is_within[<context.area>]> && <player.item_in_hand.has_nbt[destination]>:
-                - playeffect effect:ENCHANTMENT_TABLE at:<context.area.blocks[lodestone].first.center> quantity:10 data:0.8 offset:0,2,0
-                - wait 2t
-        on player exits waystone_*:
+        - if <context.cause> == WALK:
+            - flag player inwaystone
+            - if <player.item_in_hand.has_nbt[destination]>:
+                - flag player inwaystone:!
+                - flag player activewaystone
+                - playsound <player.location> sound:BLOCK_BEACON_ACTIVATE volume:10 pitch:0.5
+                - while <player.location.is_within[<context.area>]> && <player.item_in_hand.has_nbt[destination]>:
+                    - playeffect effect:ENCHANTMENT_TABLE at:<context.area.blocks[lodestone].first.center> quantity:10 data:0.8 offset:0,2,0
+                    - wait 2t
+        on player exits waystone_* flagged:inwaystone:
+        - flag player inwaystone:!
+        - playsound <player.location> sound:ENTITY_VILLAGER_AMBIENT volume:10 pitch:1
+        - narrate "<&color[#A181B4]><italic>Maybe I should come back with a teleportation rune.."
+        on player exits waystone_* flagged:activewaystone:
         - if <context.cause> == TELEPORT:
             - stop
-        - if <player.item_in_hand.has_nbt[destination]> || <player.has_flag[justteleported]>:
-            - flag player inwaystone:!
-            - flag player justteleported:!
+        - if <player.item_in_hand.has_nbt[destination]>:
+            - flag player activewaystone:!
             - playsound <player.location> sound:BLOCK_BEACON_DEACTIVATE volume:10 pitch:0.5
-        - else:
-            - playsound <player.location> sound:ENTITY_VILLAGER_AMBIENT volume:10 pitch:1
-            - narrate "<&color[#A181B4]><italic>Maybe I should come back with a teleportation rune.." targets:<player>
+        on player exits waystone_* flagged:justteleported:
+        - flag player justteleported:!
+        - flag player activewaystone:!
+        - if <player.item_in_hand.has_nbt[destination]>:
+            - playsound <player.location> sound:BLOCK_BEACON_DEACTIVATE volume:10 pitch:0.5
         after player scrolls their hotbar in:waystone_* item:teleportation_rune_*:
-        - event "player enters waystone_*"
-        on player right clicks lodestone in:waystone_* with:teleportation_rune_*:
+        - flag player activewaystone
+        - playsound <player.location> sound:BLOCK_BEACON_ACTIVATE volume:10 pitch:0.5
+        - while <player.has_flag[activewaystone]> && <player.item_in_hand.has_nbt[destination]>:
+            - playeffect effect:ENCHANTMENT_TABLE at:<player.location.find.blocks[lodestone].within[5].first.center> quantity:10 data:0.8 offset:0,2,0
+            - wait 2t
+        on player right clicks lodestone in:waystone_* with:teleportation_rune_* flagged:activewaystone:
+        - define destination <context.item.nbt[destination]>
+        - if <context.location.is_within[<[destination]>]>:
+            - narrate "<red>You are already here!"
+            - stop
+        - else:
+            - flag player confirmation duration:5s
+            - title "title:<green>[ Destination ]" "subtitle:<dark_purple><context.item.nbt[destination]>" fade_in:0.25s stay:1s fade_out:0.25s
+            - wait 1s
+            - title "title:<green>Right click to confirm."
+        on player right clicks lodestone in:waystone_* with:teleportation_rune_* flagged:confirmation:
+        - define destination <context.item.nbt[destination]>
+        - flag player activewaystone:!
         - take iteminhand
+        - playsound <player.location> sound:BLOCK_END_PORTAL_FRAME_FILL volume:10 pitch:0.5
         - inject waystone_teleport
 
 waystone_teleport:
     type: task
     script:
-    - define destination <context.item.nbt[destination]>
-    - if <context.location.is_within[<[destination]>]>:
-        - narrate "<red>You are already here!"
-        - stop
-    - else:
-        - effectlib type:atom duration:3s location:<context.location>
-        - wait 3s
-        - flag player justteleported
-        - playsound <player.location> sound:ENTITY_ENDERMAN_TELEPORT volume:10 pitch:0.5
-        - teleport <player> <cuboid[<[destination]>].spawnable_blocks.random>
+    - effectlib type:atom duration:3s location:<context.location>
+    - wait 3s
+    - flag player justteleported
+    - playsound <player.location> sound:ENTITY_ENDERMAN_TELEPORT volume:10 pitch:0.5
+    - teleport <player> <cuboid[<[destination]>].spawnable_blocks.random>
