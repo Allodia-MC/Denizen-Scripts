@@ -3,6 +3,9 @@
 # Implement rune uses/durability via NBT
 # Cleanup Titles for Confirmation Click, format destination elementtag
 # Implement stellium cost
+# Make particle tornado smoke, and denser/closer together bits of particles
+# Add particle ring of dragon breath
+# Add particles to player when they arrive
 
 teleportation_rune_test1:
     type: item
