@@ -31,7 +31,7 @@ IronLine3:
 IronHologram:
     type: task
     script:
-    - spawn IronItem <player.location.above[1.1]>
+    - spawn IronItem <player.location.above[0.2]>
     - spawn IronLine1 <player.location.above[0.8]>
     - spawn IronLine2 <player.location.above[0.5]>
     - spawn IronLine3 <player.location.above[0.2]>
