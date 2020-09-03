@@ -15,20 +15,20 @@ hud_toggle:
         - narrate "<red>Improper usage. Use /hud <&lt>enable/disable<&gt>."
         - stop
     # could this next portion be better done with a choose/case layout?
-    - if <context.args.get[1].contains_text[enable]> && !<player.flag[hud_enabled]>:
+    - if <context.args.first.contains_text[enable]> && !<player.flag[hud_enabled]>:
         - flag player hud_enabled
         - inject hud_enable
         - narrate "<green>Successfully enabled HUD."
         - stop
-    - if <context.args.get[1].contains_text[enable]> && <player.flag[hud_enabled]>:
+    - if <context.args.first.contains_text[enable]> && <player.flag[hud_enabled]>:
         - narrate "<red>Your HUD is already enabled."
         - stop
-    - if <context.args.get[1].contains_text[disable]> && <player.flag[hud_enabled]>:
+    - if <context.args.first.contains_text[disable]> && <player.flag[hud_enabled]>:
         - flag player hud_enabled:!
         - inject hud_disable
         - narrate "<red>Successfully disabled HUD."
         - stop
-    - if <context.args.get[1].contains_text[disable]> && !<player.flag[hud_enabled]>:
+    - if <context.args.first.contains_text[disable]> && !<player.flag[hud_enabled]>:
         - narrate "<red>Your HUD is already disabled."
         - stop
     - else:
